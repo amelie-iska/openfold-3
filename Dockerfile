@@ -64,11 +64,7 @@ RUN rm -rf /usr/local/cuda/doc \
 COPY --from=builder /opt/conda /opt/conda
 ENV PATH=/opt/conda/bin:$PATH
 
-# Copy CUTLASS
-COPY --from=builder /opt/cutlass /opt/cutlass
-
 # Set environment variables
-ENV CUTLASS_PATH=/opt/cutlass
 ENV KMP_AFFINITY=none
 ENV LIBRARY_PATH=/opt/conda/lib:$LIBRARY_PATH
 ENV LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH
