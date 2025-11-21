@@ -14,28 +14,16 @@ RUN apt-get update && apt-get install -y \
 
 # Install miniforge
 RUN wget -P /tmp \
-    "https://github.com/conda-forge/miniforge/releases/download/25.3.1-0/Miniforge3-Linux-x86_64.sh" \
+    "https://github.com/conda-forge/miniforge/releases/download/latest/Miniforge3-Linux-x86_64.sh" \
     && bash /tmp/Miniforge3-Linux-x86_64.sh -b -p /opt/conda \
     && rm /tmp/Miniforge3-Linux-x86_64.sh
 
 ENV PATH=/opt/conda/bin:$PATH
 
-# Copy and install dependencies with aggressive cleanup
-COPY environments/production.yml /opt/openfold3/environment.yml
-RUN mamba env update -n base --file /opt/openfold3/environment.yml \
-    && mamba clean --all --yes \
-    && conda clean --all --yes
-
-# Copy the entire source tree
 COPY . /opt/openfold3/
-
-# Install third party dependencies
-WORKDIR /opt/
-RUN /opt/openfold3/scripts/install_third_party_dependencies.sh
-
-# Install the package
 WORKDIR /opt/openfold3
-RUN python3 setup.py install
+RUN pip install . 
+RUN mamba install -c bioconda kalign2 && mamba clean --all --yes
 
 # Set CUDA architecture for compilation (adjust based on your GPU)
 ENV TORCH_CUDA_ARCH_LIST="8.0;8.6;9.0"
